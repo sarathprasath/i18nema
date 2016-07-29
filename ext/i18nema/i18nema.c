@@ -229,7 +229,9 @@ add_key_value(i_key_value_t **hash, i_key_value_t *kv)
       return;
     }
     HASH_DEL(*hash, existing);
-    delete_key_value(existing, 1);
+    empty_object(existing->value, 0);
+    existing->value->type = i_type_unused;
+    delete_key_value(existing, 0);
   }
   HASH_ADD_KEYPTR(hh, *hash, kv->key, strlen(kv->key), kv);
 }
@@ -243,7 +245,8 @@ merge_hash(i_object_t *hash, i_object_t *other_hash)
     HASH_DEL(other_hash->data.hash, kv);
     add_key_value(&hash->data.hash, kv);
   }
-  delete_object_r(other_hash);
+  empty_object(other_hash, 1);
+  other_hash->type = i_type_unused;
 }
 
 static int
@@ -443,6 +446,7 @@ load_yml_string(VALUE self, VALUE yml)
     rb_raise(I18nemaBackendLoadError, "root yml node is not a hash");
   }
   merge_hash(root_object, new_root_object);
+  delete_object_r(new_root_object);
 
   return INT2NUM(current_translation_count);
 }
