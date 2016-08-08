@@ -356,9 +356,11 @@ handle_syck_node(SyckParser *parser, SyckNode *node)
     } else if (strcmp(node->type_id, "null") == 0) {
       result = &i_object_null;
     } else if (strcmp(node->type_id, "bool#yes") == 0) {
-      result = &i_object_true;
+      const char *str = "true";
+      result = new_string_object((char *)str, strlen(str));
     } else if (strcmp(node->type_id, "bool#no") == 0) {
-      result = &i_object_false;
+      const char *str = "false";
+      result = new_string_object((char *)str, strlen(str));
     } else if (strcmp(node->type_id, "int") == 0) {
       syck_str_blow_away_commas(node);
       result = new_string_object(node->data.str->ptr, node->data.str->len);
